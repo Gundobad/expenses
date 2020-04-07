@@ -18,13 +18,16 @@ option java_package = "io.grpc.examples.expenses";
 option java_outer_classname = "ExpensesProto";
 option objc_class_prefix = "HLW";
 
-import "expense.proto";
+import "google/protobuf/timestamp.proto";
 
 package expsenses;
 
 service Expenses {
   // GET all expenses
   rpc GetAllExpenses (ExpensesRequest) returns (ExpensesReply) {}
+
+  // GET one expense
+  rpc GetOneExpense (SingleExpenseRequest) returns (SingleExpenseReply) {}
 }
 
 message ExpensesRequest {
@@ -32,5 +35,17 @@ message ExpensesRequest {
 }
 
 message ExpensesReply {
-  repeated expsense.SingleExpenseReply expense = 1;
+  repeated SingleExpenseReply expense = 1;
+}
+
+message SingleExpenseRequest {
+  string userID = 1;
+  string expenseID = 2;
+}
+
+message SingleExpenseReply {
+  string winkelID = 1;
+  double price = 2;
+  string summary = 3;
+  google.protobuf.Timestamp time = 4;
 }
