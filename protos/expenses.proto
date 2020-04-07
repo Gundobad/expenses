@@ -5,8 +5,6 @@ option java_package = "io.grpc.examples.expenses";
 option java_outer_classname = "ExpensesProto";
 option objc_class_prefix = "HLW";
 
-import "google/protobuf/timestamp.proto";
-
 package expsenses;
 
 // Service with methods for retrieving either one or all expenses made
@@ -18,7 +16,7 @@ service Expenses {
   rpc GetOneExpense (ExpenseRequest) returns (Expense) {}
 
   // POST one expense
-  rpc CreateOneExpense (CreateExpenseRequest) returns (Expense) {}
+  rpc CreateOneExpense (Expense) returns (Expense) {}
 }
 
 message MultiExpensesRequest {
@@ -39,5 +37,5 @@ message Expense {
   string winkelID = 2;
   float price = 3;
   string summary = 4;
-  google.protobuf.Timestamp time = 5;
+  string timestamp = 5;
 }
