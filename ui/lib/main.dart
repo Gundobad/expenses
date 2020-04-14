@@ -57,18 +57,17 @@ class _MyHomePageState extends State<MyHomePage> {
     var winkel = expense.winkelID;
     var summary = expense.summary;
     return new Card(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  ListTile(
-                    leading: Text('€$price'), // TODO: limit length
-                    title: Text('$winkel'),
-                    subtitle:
-                        Text('$summary'),
-                  ),
-                ],
-              ),
-            );
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          ListTile(
+            leading: Text('€$price'), // TODO: limit length
+            title: Text('$winkel'),
+            subtitle: Text('$summary'),
+          ),
+        ],
+      ),
+    );
   }
 
   List<Card> _convertToCards(List<Expense> expenses) {
@@ -145,9 +144,8 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Expanded(
-            child:ListView(
-              padding: const EdgeInsets.all(8),
-              children: _expenses)),
+                child: ListView(
+                    padding: const EdgeInsets.all(8), children: _expenses)),
           ],
         ),
       ),
