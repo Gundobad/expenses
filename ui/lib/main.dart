@@ -49,50 +49,65 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   String _yolotanker = "yolo";
+  List<Card> _expenses = List<Card>();
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  Card _convertToCard(Expense expense) {
+    var price = expense.price;
+    var winkel = expense.winkelID;
+    var summary = expense.summary;
+    return new Card(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  ListTile(
+                    leading: Text('€$price'), // TODO: limit length
+                    title: Text('$winkel'),
+                    subtitle:
+                        Text('$summary'),
+                  ),
+                ],
+              ),
+            );
+  }
+
+  List<Card> _convertToCards(List<Expense> expenses) {
+    List<Card> cards = new List<Card>();
+    for (Expense expense in expenses) {
+      cards.add(_convertToCard(expense));
+    }
+    return cards;
   }
 
   void _checkGrpc() {
     var temp = () async {
-      String temp;
+      List<Expense> expenses = new List<Expense>();
       final channel = ClientChannel(
         '192.168.0.186',
         port: 50051,
-        options: const ChannelOptions(credentials: ChannelCredentials.insecure()),
+        options:
+            const ChannelOptions(credentials: ChannelCredentials.insecure()),
       );
       final stub = ExpensesClient(channel);
 
       final userId = "dj";
 
       try {
-        var response = await stub.getMultiExpenses(MultiExpensesRequest()..userID = userId);
-        print('Greeter client received: ${response.expenses}');
-        temp = "tanker";
+        var response = await stub
+            .getMultiExpenses(MultiExpensesRequest()..userID = userId);
+        expenses = response.expenses;
       } catch (e) {
         print('Caught error: $e');
-        temp = "error";
       }
       await channel.shutdown();
-      return temp;
+      return expenses;
     };
 
-    temp().then((newtanker){
+    temp().then((expenseslist) {
       setState(() {
-        _yolotanker = newtanker;
+        _expenses = _convertToCards(expenseslist);
       });
     });
-    
   }
 
   @override
@@ -129,13 +144,10 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              'You have $_yolotanker-ed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
+            Expanded(
+            child:ListView(
+              padding: const EdgeInsets.all(8),
+              children: _expenses)),
           ],
         ),
       ),
