@@ -2,8 +2,6 @@
 __pycache__
 env/
 
-*pb2*.py
-
 # ionic ingores
 # Miscellaneous
 *.class
