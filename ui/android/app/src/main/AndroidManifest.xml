@@ -8,7 +8,7 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="ExpenseTracker"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@drawable/ic_food_app">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
