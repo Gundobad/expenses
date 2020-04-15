@@ -1,4 +1,4 @@
-package com.example.ui
+package com.gundobad.norbanus.ExpenseTracker
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity
