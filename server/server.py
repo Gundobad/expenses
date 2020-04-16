@@ -78,7 +78,7 @@ def serve():
 
 
 client = MongoClient()
-client = MongoClient('mongodb://localhost:27017/')
+client = MongoClient('mongodb://db:27017/')
 db = client['grpc_db']['expenses']
 
 
