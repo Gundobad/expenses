@@ -65,7 +65,7 @@ class ExpenseHandler(expenses_pb2_grpc.ExpensesServicer):
 
     def CreateOneExpense(self, request, context):
         expense = to_mongo(request)
-        db.insert_one(expense)
+        # db.insert_one(expense)
         return from_mongo(expense)
 
 
