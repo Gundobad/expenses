@@ -77,7 +77,6 @@ def serve():
     server.wait_for_termination()
 
 
-client = MongoClient()
 client = MongoClient('mongodb://db:27017/')
 db = client['grpc_db']['expenses']
 
