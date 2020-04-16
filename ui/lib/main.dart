@@ -68,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
     var temp = () async {
       List<Expense> expenses = new List<Expense>();
       final channel = ClientChannel(
-        '192.168.0.186',
+        '192.168.0.229',
         port: 50051,
         options:
             const ChannelOptions(credentials: ChannelCredentials.insecure()),
