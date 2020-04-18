@@ -63,6 +63,19 @@ class _MyHomePageState extends State<MyHomePage> {
     for (Expense expense in expenses) {
       cards.add(_convertToCard(expense));
     }
+    if (cards.isEmpty) {
+      cards.add(new Card(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          ListTile(
+            title: Text('No expenses available yet. '),
+            subtitle: Text('You can add a new expense by tapping the button in the bottom right of your screen.'),
+          ),
+        ],
+      ),
+    ));
+    }
     return cards;
   }
 
@@ -95,6 +108,12 @@ class _MyHomePageState extends State<MyHomePage> {
         _expenses = _convertToCards(expenseslist);
       });
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _checkGrpc();
   }
 
   @override
