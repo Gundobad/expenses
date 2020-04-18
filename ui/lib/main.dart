@@ -177,6 +177,14 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
       TextEditingController();
   static final TextEditingController _timeTextController =
       TextEditingController();
+    
+  static const List<String> coded = [","]; //ABV list
+  static const List<String> decoded = ["."]; //corresponding list 
+  static final Map<String, String> _doubleTextCleanup = new Map.fromIterables(coded, decoded);
+
+  static String cleanUpDoubleText(String old) {
+    return _doubleTextCleanup.entries.fold(old, (prev, e) => prev.replaceAll(e.key, e.value));
+  }
 
   @override
   void initState() {
@@ -192,7 +200,7 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
   void createNewExpense() {
     Expense e = new Expense()
   ..winkelID = _shopTextController.text
-    ..price = double.parse(_paymentTextController.text)
+    ..price = double.parse(cleanUpDoubleText(_paymentTextController.text))
     ..summary = "default"
     ..timestamp = _dateTextController.text + " " + _timeTextController.text;
     
