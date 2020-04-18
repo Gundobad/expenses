@@ -41,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Card> _expenses = List<Card>();
 
   Card _convertToCard(Expense expense) {
-    var price = expense.price;
+    var price = expense.price.toStringAsFixed(2);
     var winkel = expense.winkelID;
     var summary = expense.summary;
     return new Card(
