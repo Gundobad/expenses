@@ -41,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Card> _expenses = List<Card>();
 
   Card _convertToCard(Expense expense) {
-    var price = expense.price;
+    var price = expense.price.toStringAsFixed(2);
     var winkel = expense.winkelID;
     var summary = expense.summary;
     return new Card(
@@ -49,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           ListTile(
-            leading: Text('€$price'), // TODO: limit length
+            leading: Text('€$price'),
             title: Text('$winkel'),
             subtitle: Text('$summary'),
           ),
