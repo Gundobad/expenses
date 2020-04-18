@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
+import 'package:intl/intl.dart';
 import 'package:grpc/grpc.dart';
 
 import 'proto-compiled/expenses.pb.dart';
@@ -132,16 +134,144 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Expanded(
-                child: ListView(
-                    padding: const EdgeInsets.all(8), children: _expenses)),
+              child: ListView(
+                  padding: const EdgeInsets.all(8), children: _expenses),
+            ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _checkGrpc, // _incrementCounter
+        // onPressed: _checkGrpc, // _incrementCounter
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CreateExpenseView()),
+          );
+        },
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+}
+
+class CreateExpenseView extends StatefulWidget {
+  CreateExpenseView({Key key}) : super(key: key);
+
+  @override
+  _CreateExpenseViewState createState() => _CreateExpenseViewState();
+}
+
+class _CreateExpenseViewState extends State<CreateExpenseView> {
+  static final TextEditingController _shopTextController =
+      TextEditingController();
+  static final TextEditingController _paymentTextController =
+      TextEditingController();
+  static final TextEditingController _dateTextController =
+      TextEditingController();
+  static final TextEditingController _timeTextController =
+      TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _shopTextController.text = "";
+    _paymentTextController.text = "";
+
+    var now = new DateTime.now();
+    _dateTextController.text = (new DateFormat('dd/MM/yyyy')).format(now);
+    _timeTextController.text = (new DateFormat('HH:mm')).format(now);
+  }
+
+  void createNewExpense() {
+    Expense e = new Expense()
+  ..winkelID = _shopTextController.text
+    ..price = double.parse(_paymentTextController.text)
+    ..summary = "default"
+    ..timestamp = _dateTextController.text + " " + _timeTextController.text;
+    
+    var temp = (exp) async {
+      final channel = ClientChannel(
+        '192.168.0.229',
+        port: 50051,
+        options:
+            const ChannelOptions(credentials: ChannelCredentials.insecure()),
+      );
+      final stub = ExpensesClient(channel);
+
+      try {
+        await stub.createOneExpense(exp);
+      } catch (e) {
+        print('Caught error: $e');
+      }
+      await channel.shutdown();
+    };
+
+    temp(e);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          // Here we take the value from the MyHomePage object that was created by
+          // the App.build method, and use it to set our appbar title.
+          title: Text("New expense"),
+        ),
+        body: Center(
+          // Center is a layout widget. It takes a single child and positions it
+          // in the middle of the parent.
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Expanded(
+                    child: ListView(
+                  padding: const EdgeInsets.all(8),
+                  children: <Widget>[
+                    SizedBox(height: 60),
+                    TextField(
+                      controller: _shopTextController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Shop',
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    TextField(
+                      controller: _paymentTextController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Payment',
+                      ),
+                      keyboardType: TextInputType.numberWithOptions(signed: true, decimal: true),
+                    ),
+                    SizedBox(height: 30),
+                    TextField(
+                      controller: _dateTextController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Date',
+                      ),
+                      keyboardType: TextInputType.datetime,
+                    ),
+                    SizedBox(height: 10),
+                    TextField(
+                      controller: _timeTextController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Time',
+                      ),
+                      keyboardType: TextInputType.datetime,
+                    ),
+                    SizedBox(height: 40),
+                    RaisedButton(
+                      onPressed: () {createNewExpense();},
+                      child:
+                          const Text('Create', style: TextStyle(fontSize: 20)),
+                    ),
+                  ],
+                ))
+              ]),
+        ));
   }
 }
