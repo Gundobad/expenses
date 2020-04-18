@@ -152,7 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => CreateExpenseView()),
-          );
+          ).then((value) {_checkGrpc();});
         },
         tooltip: 'Increment',
         child: Icon(Icons.add),
@@ -222,6 +222,7 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
     };
 
     temp(e);
+    Navigator.pop(context);
   }
 
   @override
