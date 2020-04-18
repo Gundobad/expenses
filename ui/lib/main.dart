@@ -134,6 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
           IconButton(
         icon: Icon(Icons.refresh),
         onPressed: () {
+          // TODO: show broadcast mesage when reload succeeded
           _checkGrpc();
         },)
         ],
