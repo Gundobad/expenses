@@ -169,7 +169,6 @@ class _MyHomePageState extends State<MyHomePage> {
               child: ListView(
                   padding: const EdgeInsets.all(8), children: _expenses),
             ),
-            _EmailPasswordForm(),
           ],
         ),
       ),
@@ -204,6 +203,7 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
         appBar: AppBar(
           title: Center(child: Text("User Area")),
         ),
@@ -248,7 +248,14 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
                       child: RaisedButton(
                         onPressed: () async {
                           if (_formKey.currentState.validate()) {
-                            _signInWithEmailAndPassword();
+                            if (await _signInWithEmailAndPassword())
+                              setState(() {
+                                Navigator.pushReplacement(
+                                    context,
+                                    new MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            new MyHomePage()));
+                              });
                           }
                         },
                         child: const Text('Sign in'),
@@ -265,7 +272,23 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
                                 : 'Sign in failed'),
                         style: TextStyle(color: Colors.red),
                       ),
-                    )
+                    ),
+                    SizedBox(height: 20),
+                    // https://stackoverflow.com/a/56040244
+                    InkWell(
+                        onTap: () {
+                          Navigator.pushReplacement(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      new RegisterPage()));
+                        },
+                        child: new Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.all(16),
+                          child: const Text(
+                              "Don't have an account? Sign up here!"),
+                        )),
                   ],
                 ),
               )
@@ -280,7 +303,7 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
   }
 
   // Example code of how to sign in with email and password.
-  void _signInWithEmailAndPassword() async {
+  Future<bool> _signInWithEmailAndPassword() async {
     print("Signing in with email [" +
         _emailController.text +
         "] and pw [" +
@@ -309,6 +332,7 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
         _success = false;
       });
     }
+    return _success;
   }
 }
 
@@ -347,6 +371,7 @@ class RegisterPageState extends State<RegisterPage> {
             ),
             TextFormField(
               controller: _passwordController,
+              obscureText: true,
               decoration: const InputDecoration(labelText: 'Password'),
               validator: (String value) {
                 if (value.isEmpty) {
@@ -372,6 +397,7 @@ class RegisterPageState extends State<RegisterPage> {
               child: Text(_success == null
                   ? ''
                   : (_success
+                      // TODO: provide button to g back to sign up page
                       ? 'Successfully registered ' + _userEmail
                       : 'Registration failed')),
             )
