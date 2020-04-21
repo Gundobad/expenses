@@ -7,6 +7,10 @@ import 'package:grpc/grpc.dart';
 import 'proto-compiled/expenses.pb.dart';
 import 'proto-compiled/expenses.pbgrpc.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+
+final FirebaseAuth _auth = FirebaseAuth.instance;
+
 void main() => runApp(ExpenseTracker());
 
 class ExpenseTracker extends StatelessWidget {
@@ -18,20 +22,20 @@ class ExpenseTracker extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.orange,
       ),
-      home: MyHomePage(title: 'Expense tracker'),
+      home: _EmailPasswordForm(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key key}) : super(key: key);
 
   // This class is the configuration for the state. It holds the values (in this
   // case the title) provided by the parent (in this case the App widget) and
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
 
-  final String title;
+  final String title = "Expense Tracker";
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -65,16 +69,17 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     if (cards.isEmpty) {
       cards.add(new Card(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          ListTile(
-            title: Text('No expenses available yet. '),
-            subtitle: Text('You can add a new expense by tapping the button in the bottom right of your screen.'),
-          ),
-        ],
-      ),
-    ));
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              title: Text('No expenses available yet. '),
+              subtitle: Text(
+                  'You can add a new expense by tapping the button in the bottom right of your screen.'),
+            ),
+          ],
+        ),
+      ));
     }
     return cards;
   }
@@ -132,11 +137,12 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
         actions: <Widget>[
           IconButton(
-        icon: Icon(Icons.refresh),
-        onPressed: () {
-          // TODO: show broadcast mesage when reload succeeded
-          _checkGrpc();
-        },)
+            icon: Icon(Icons.refresh),
+            onPressed: () {
+              // TODO: show broadcast mesage when reload succeeded
+              _checkGrpc();
+            },
+          )
         ],
       ),
       body: Center(
@@ -172,12 +178,269 @@ class _MyHomePageState extends State<MyHomePage> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => CreateExpenseView()),
-          ).then((value) {_checkGrpc();});
+          ).then((value) {
+            _checkGrpc();
+          });
         },
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+}
+
+class _EmailPasswordForm extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _EmailPasswordFormState();
+}
+
+class _EmailPasswordFormState extends State<_EmailPasswordForm> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _success;
+  String _userEmail;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        resizeToAvoidBottomPadding: false,
+        appBar: AppBar(
+          title: Center(child: Text("User Area")),
+        ),
+        body: Center(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+              Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      child: const Text('Sign in with email and password'),
+                      padding: const EdgeInsets.all(16),
+                      alignment: Alignment.center,
+                    ),
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: const InputDecoration(labelText: 'Email'),
+                      validator: (String value) {
+                        if (value.isEmpty) {
+                          return 'Please enter some text';
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: true,
+                      decoration: const InputDecoration(labelText: 'Password'),
+                      validator: (String value) {
+                        if (value.isEmpty) {
+                          return 'Please enter some text';
+                        }
+                        return null;
+                      },
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      alignment: Alignment.center,
+                      child: RaisedButton(
+                        onPressed: () async {
+                          if (_formKey.currentState.validate()) {
+                            if (await _signInWithEmailAndPassword())
+                              setState(() {
+                                Navigator.pushReplacement(
+                                    context,
+                                    new MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            new MyHomePage()));
+                              });
+                          }
+                        },
+                        child: const Text('Sign in'),
+                      ),
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        _success == null
+                            ? ''
+                            : (_success
+                                ? 'Successfully signed in ' + _userEmail
+                                : 'Sign in failed'),
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    // Why InkWell? https://stackoverflow.com/a/56040244
+                    InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => RegisterPage()));
+                        },
+                        child: new Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.all(16),
+                          child: const Text(
+                              "Don't have an account? Sign up here!"),
+                        )),
+                  ],
+                ),
+              )
+            ])));
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  // Example code of how to sign in with email and password.
+  Future<bool> _signInWithEmailAndPassword() async {
+    print("Signing in with email [" +
+        _emailController.text +
+        "] and pw [" +
+        _passwordController.text +
+        "]");
+
+    try {
+      final FirebaseUser user = (await _auth.signInWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      ))
+          .user;
+      if (user != null) {
+        setState(() {
+          _success = true;
+          _userEmail = user.email;
+        });
+      } else {
+        _success = false;
+      }
+    } catch (e) {
+      print("Caught error: " + e.toString());
+      // TODO: error highlighting on error, depending on kind of error
+      // TODO: trim spaces
+      setState(() {
+        _success = false;
+      });
+    }
+    return _success;
+  }
+}
+
+class RegisterPage extends StatefulWidget {
+  final String title = 'Registration';
+  @override
+  State<StatefulWidget> createState() => RegisterPageState();
+}
+
+class RegisterPageState extends State<RegisterPage> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _success;
+  String _userEmail;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            TextFormField(
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: 'Email'),
+              validator: (String value) {
+                if (value.isEmpty) {
+                  return 'Please enter some text';
+                }
+                return null;
+              },
+            ),
+            TextFormField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'Password'),
+              validator: (String value) {
+                if (value.isEmpty) {
+                  return 'Please enter some text';
+                }
+                return null;
+              },
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              alignment: Alignment.center,
+              child: RaisedButton(
+                onPressed: (_success == true)
+                    ? null
+                    : () async {
+                        if (_formKey.currentState.validate()) {
+                          _register();
+                        }
+                      },
+                child: const Text('Submit'),
+              ),
+            ),
+            Container(
+              alignment: Alignment.center,
+              child: Text(_success == null
+                  ? ''
+                  : (_success
+                      ? 'Successfully registered ' + _userEmail
+                      : 'Registration failed')),
+            ),
+            Container(
+              alignment: Alignment.center,
+              child: (_success == null || _success == false)
+                  ? null
+                  : RaisedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('> Sign in page'),
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    // Clean up the controller when the Widget is disposed
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  // Example code for registration.
+  void _register() async {
+    final FirebaseUser user = (await _auth.createUserWithEmailAndPassword(
+      email: _emailController.text,
+      password: _passwordController.text,
+    ))
+        .user;
+    if (user != null) {
+      setState(() {
+        _success = true;
+        _userEmail = user.email;
+      });
+    } else {
+      _success = false;
+    }
   }
 }
 
@@ -197,13 +460,15 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
       TextEditingController();
   static final TextEditingController _timeTextController =
       TextEditingController();
-    
+
   static const List<String> coded = [","]; //ABV list
-  static const List<String> decoded = ["."]; //corresponding list 
-  static final Map<String, String> _doubleTextCleanup = new Map.fromIterables(coded, decoded);
+  static const List<String> decoded = ["."]; //corresponding list
+  static final Map<String, String> _doubleTextCleanup =
+      new Map.fromIterables(coded, decoded);
 
   static String cleanUpDoubleText(String old) {
-    return _doubleTextCleanup.entries.fold(old, (prev, e) => prev.replaceAll(e.key, e.value));
+    return _doubleTextCleanup.entries
+        .fold(old, (prev, e) => prev.replaceAll(e.key, e.value));
   }
 
   @override
@@ -219,11 +484,11 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
 
   void createNewExpense() {
     Expense e = new Expense()
-  ..winkelID = _shopTextController.text
-    ..price = double.parse(cleanUpDoubleText(_paymentTextController.text))
-    ..summary = "default"
-    ..timestamp = _dateTextController.text + " " + _timeTextController.text;
-    
+      ..winkelID = _shopTextController.text
+      ..price = double.parse(cleanUpDoubleText(_paymentTextController.text))
+      ..summary = "default"
+      ..timestamp = _dateTextController.text + " " + _timeTextController.text;
+
     var temp = (exp) async {
       final channel = ClientChannel(
         '192.168.0.229',
@@ -278,7 +543,8 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
                         border: OutlineInputBorder(),
                         labelText: 'Payment',
                       ),
-                      keyboardType: TextInputType.numberWithOptions(signed: true, decimal: true),
+                      keyboardType: TextInputType.numberWithOptions(
+                          signed: true, decimal: true),
                     ),
                     SizedBox(height: 30),
                     TextField(
@@ -300,7 +566,9 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
                     ),
                     SizedBox(height: 40),
                     RaisedButton(
-                      onPressed: () {createNewExpense();},
+                      onPressed: () {
+                        createNewExpense();
+                      },
                       child:
                           const Text('Create', style: TextStyle(fontSize: 20)),
                     ),
