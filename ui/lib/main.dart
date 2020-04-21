@@ -274,14 +274,12 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
                       ),
                     ),
                     SizedBox(height: 20),
-                    // https://stackoverflow.com/a/56040244
+                    // Why InkWell? https://stackoverflow.com/a/56040244
                     InkWell(
                         onTap: () {
-                          Navigator.pushReplacement(
-                              context,
-                              new MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      new RegisterPage()));
+                          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => RegisterPage()));
                         },
                         child: new Container(
                           alignment: Alignment.center,
@@ -384,7 +382,7 @@ class RegisterPageState extends State<RegisterPage> {
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               alignment: Alignment.center,
               child: RaisedButton(
-                onPressed: () async {
+                onPressed: (_success == true)? null: () async {
                   if (_formKey.currentState.validate()) {
                     _register();
                   }
@@ -397,10 +395,20 @@ class RegisterPageState extends State<RegisterPage> {
               child: Text(_success == null
                   ? ''
                   : (_success
-                      // TODO: provide button to g back to sign up page
                       ? 'Successfully registered ' + _userEmail
                       : 'Registration failed')),
-            )
+            ),
+            Container(
+              alignment: Alignment.center,
+              child: (_success == null || _success == false)
+                  ? null
+                  : RaisedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('> Sign in page'),
+              ),
+            ),
           ],
         ),
       ),
