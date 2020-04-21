@@ -203,7 +203,7 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+        resizeToAvoidBottomPadding: false,
         appBar: AppBar(
           title: Center(child: Text("User Area")),
         ),
@@ -278,8 +278,9 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
                     InkWell(
                         onTap: () {
                           Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => RegisterPage()));
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => RegisterPage()));
                         },
                         child: new Container(
                           alignment: Alignment.center,
@@ -382,11 +383,13 @@ class RegisterPageState extends State<RegisterPage> {
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               alignment: Alignment.center,
               child: RaisedButton(
-                onPressed: (_success == true)? null: () async {
-                  if (_formKey.currentState.validate()) {
-                    _register();
-                  }
-                },
+                onPressed: (_success == true)
+                    ? null
+                    : () async {
+                        if (_formKey.currentState.validate()) {
+                          _register();
+                        }
+                      },
                 child: const Text('Submit'),
               ),
             ),
@@ -403,11 +406,11 @@ class RegisterPageState extends State<RegisterPage> {
               child: (_success == null || _success == false)
                   ? null
                   : RaisedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('> Sign in page'),
-              ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('> Sign in page'),
+                    ),
             ),
           ],
         ),
