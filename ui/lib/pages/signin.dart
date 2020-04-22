@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'home.dart';
 import 'signup.dart';
@@ -20,6 +21,23 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
 
   bool _success;
   String _userEmail;
+
+  SharedPreferences logindata;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLoggedIn();
+  }
+
+  void _checkLoggedIn() async {
+    logindata = await SharedPreferences.getInstance();
+    bool loggedIn = (logindata.getBool('logged_in') ?? true);
+    if (loggedIn == true) {
+      Navigator.pushReplacement(
+          context, new MaterialPageRoute(builder: (context) => MyHomePage()));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,6 +155,8 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
       ))
           .user;
       if (user != null) {
+        logindata.setBool('logged_in', true);
+        logindata.setString('username', user.uid);
         setState(() {
           _success = true;
           _userEmail = user.email;
