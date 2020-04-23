@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 
-
 class RegisterPage extends StatefulWidget {
   final String title = 'Registration';
   @override
@@ -17,8 +16,7 @@ class RegisterPageState extends State<RegisterPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   bool _success;
-  String _userEmail;
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,7 +54,7 @@ class RegisterPageState extends State<RegisterPage> {
               alignment: Alignment.center,
               child: RaisedButton(
                 onPressed: (_success == true)
-                    ? null
+                    ? null // disables the button
                     : () async {
                         if (_formKey.currentState.validate()) {
                           _register();
@@ -70,7 +68,7 @@ class RegisterPageState extends State<RegisterPage> {
               child: Text(_success == null
                   ? ''
                   : (_success
-                      ? 'Successfully registered ' + _userEmail
+                      ? 'Successfully registered!'
                       : 'Registration failed')),
             ),
             Container(
@@ -105,13 +103,23 @@ class RegisterPageState extends State<RegisterPage> {
       password: _passwordController.text,
     ))
         .user;
-    if (user != null) {
+    if (user == null) {
       setState(() {
-        _success = true;
-        _userEmail = user.email;
+        _success = false;
       });
     } else {
-      _success = false;
+      try {
+        await user.sendEmailVerification();
+        setState(() {
+          _success = true;
+        });
+      } catch (e) {
+        print("An error occured while trying to send email verification");
+        print(e.message);
+        setState(() {
+          _success = false;
+        });
+      }
     }
   }
 }

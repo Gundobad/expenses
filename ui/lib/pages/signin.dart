@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'home.dart';
 import 'signup.dart';
@@ -22,8 +21,6 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
   bool _success;
   String _userEmail;
 
-  SharedPreferences logindata;
-
   @override
   void initState() {
     super.initState();
@@ -31,9 +28,9 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
   }
 
   void _checkLoggedIn() async {
-    logindata = await SharedPreferences.getInstance();
-    bool loggedIn = (logindata.getBool('logged_in') ?? true);
-    if (loggedIn == true) {
+    FirebaseUser user = await _auth.currentUser();
+    if (user != null) {
+      print("Authenticated on initial startup ["+user.email+"]");
       Navigator.pushReplacement(
           context, new MaterialPageRoute(builder: (context) => MyHomePage()));
     }
@@ -152,18 +149,11 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
       final FirebaseUser user = (await _auth.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
-      ))
-          .user;
-      if (user != null) {
-        logindata.setBool('logged_in', true);
-        logindata.setString('username', user.uid);
-        setState(() {
-          _success = true;
-          _userEmail = user.email;
-        });
-      } else {
-        _success = false;
-      }
+      )).user;
+      if (!user.isEmailVerified) _auth.signOut();
+      setState(() {
+        _success = user != null && user.isEmailVerified;
+      });
     } catch (e) {
       print("Caught error: " + e.toString());
       // TODO: error highlighting on error, depending on kind of error
