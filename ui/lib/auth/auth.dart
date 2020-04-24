@@ -13,15 +13,15 @@ class AuthenticationManager {
 
   static void signIn({String email, String password}) async {
     final FirebaseUser newUser = (await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      )).user;
-      if (newUser.isEmailVerified) {
-        user = newUser;
-      }
-      else {
-        signOut();
-      }
+      email: email,
+      password: password,
+    ))
+        .user;
+    if (newUser.isEmailVerified) {
+      user = newUser;
+    } else {
+      signOut();
+    }
   }
 
   static void signOut() {
@@ -33,7 +33,8 @@ class AuthenticationManager {
     final FirebaseUser newUser = (await _auth.createUserWithEmailAndPassword(
       email: email,
       password: password,
-    )).user;
+    ))
+        .user;
     if (newUser == null) {
       return false;
     } else {

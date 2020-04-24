@@ -6,7 +6,6 @@ import '../proto-compiled/expenses.pbgrpc.dart';
 
 import 'createExpense.dart';
 
-
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key}) : super(key: key);
 

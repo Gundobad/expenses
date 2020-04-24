@@ -9,7 +9,6 @@ class RegisterPage extends StatefulWidget {
 }
 
 class RegisterPageState extends State<RegisterPage> {
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -58,9 +57,9 @@ class RegisterPageState extends State<RegisterPage> {
                         if (_formKey.currentState.validate()) {
                           setState(() async {
                             _success = await AuthenticationManager.register(
-                            email: _emailController.text,
-                            password: _passwordController.text,
-                          );
+                              email: _emailController.text,
+                              password: _passwordController.text,
+                            );
                           });
                         } else {
                           setState(() {

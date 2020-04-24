@@ -5,13 +5,11 @@ import 'signup.dart';
 import '../auth/auth.dart';
 
 class EmailPasswordForm extends StatefulWidget {
-
   @override
   State<StatefulWidget> createState() => _EmailPasswordFormState();
 }
 
 class _EmailPasswordFormState extends State<EmailPasswordForm> {
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -27,7 +25,9 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
 
   void _checkLoggedIn() async {
     if (await AuthenticationManager.isCurrentlyLoggedIn()) {
-      print("Authenticated on initial startup ["+AuthenticationManager.getUser().email+"]");
+      print("Authenticated on initial startup [" +
+          AuthenticationManager.getUser().email +
+          "]");
       Navigator.pushReplacement(
           context, new MaterialPageRoute(builder: (context) => MyHomePage()));
     }
