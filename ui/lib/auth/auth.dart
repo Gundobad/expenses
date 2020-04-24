@@ -48,4 +48,8 @@ class AuthenticationManager {
       }
     }
   }
+
+  static Future<String> getToken() async {
+    return (await user.getIdToken()).token;
+  }
 }
