@@ -1,12 +1,15 @@
-from concurrent import futures
-import logging
-
-import grpc
-from pymongo import MongoClient
-from bson.objectid import ObjectId
-
 import expenses_pb2
 import expenses_pb2_grpc
+import grpc
+import logging
+
+from bson.objectid import ObjectId
+from concurrent import futures
+from pymongo import MongoClient
+
+
+client = MongoClient('mongodb://db:27017/')
+db = client['grpc_db']['expenses']
 
 
 def from_mongo(e):
@@ -75,10 +78,6 @@ def serve():
     server.add_insecure_port('[::]:50051')
     server.start()
     server.wait_for_termination()
-
-
-client = MongoClient('mongodb://db:27017/')
-db = client['grpc_db']['expenses']
 
 
 if __name__ == '__main__':
