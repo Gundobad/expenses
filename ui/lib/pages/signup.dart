@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
+import '../auth/auth.dart';
 
 class RegisterPage extends StatefulWidget {
   final String title = 'Registration';
@@ -9,7 +9,6 @@ class RegisterPage extends StatefulWidget {
 }
 
 class RegisterPageState extends State<RegisterPage> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
@@ -57,7 +56,16 @@ class RegisterPageState extends State<RegisterPage> {
                     ? null // disables the button
                     : () async {
                         if (_formKey.currentState.validate()) {
-                          _register();
+                          setState(() async {
+                            _success = await AuthenticationManager.register(
+                            email: _emailController.text,
+                            password: _passwordController.text,
+                          );
+                          });
+                        } else {
+                          setState(() {
+                            _success = false;
+                          });
                         }
                       },
                 child: const Text('Submit'),
@@ -94,32 +102,5 @@ class RegisterPageState extends State<RegisterPage> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
-  }
-
-  // Example code for registration.
-  void _register() async {
-    final FirebaseUser user = (await _auth.createUserWithEmailAndPassword(
-      email: _emailController.text,
-      password: _passwordController.text,
-    ))
-        .user;
-    if (user == null) {
-      setState(() {
-        _success = false;
-      });
-    } else {
-      try {
-        await user.sendEmailVerification();
-        setState(() {
-          _success = true;
-        });
-      } catch (e) {
-        print("An error occured while trying to send email verification");
-        print(e.message);
-        setState(() {
-          _success = false;
-        });
-      }
-    }
   }
 }

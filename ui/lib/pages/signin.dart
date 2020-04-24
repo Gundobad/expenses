@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
-
 import 'home.dart';
 import 'signup.dart';
+import '../auth/auth.dart';
 
 class EmailPasswordForm extends StatefulWidget {
 
@@ -12,7 +11,6 @@ class EmailPasswordForm extends StatefulWidget {
 }
 
 class _EmailPasswordFormState extends State<EmailPasswordForm> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
@@ -28,9 +26,8 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
   }
 
   void _checkLoggedIn() async {
-    FirebaseUser user = await _auth.currentUser();
-    if (user != null) {
-      print("Authenticated on initial startup ["+user.email+"]");
+    if (await AuthenticationManager.isCurrentlyLoggedIn()) {
+      print("Authenticated on initial startup ["+AuthenticationManager.getUser().email+"]");
       Navigator.pushReplacement(
           context, new MaterialPageRoute(builder: (context) => MyHomePage()));
     }
@@ -146,13 +143,12 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
         "]");
 
     try {
-      final FirebaseUser user = (await _auth.signInWithEmailAndPassword(
+      AuthenticationManager.signIn(
         email: _emailController.text,
         password: _passwordController.text,
-      )).user;
-      if (!user.isEmailVerified) _auth.signOut();
-      setState(() {
-        _success = user != null && user.isEmailVerified;
+      );
+      setState(() async {
+        _success = await AuthenticationManager.isCurrentlyLoggedIn();
       });
     } catch (e) {
       print("Caught error: " + e.toString());
