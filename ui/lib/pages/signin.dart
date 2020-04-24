@@ -147,8 +147,9 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
         email: _emailController.text,
         password: _passwordController.text,
       );
-      setState(() async {
-        _success = await AuthenticationManager.isCurrentlyLoggedIn();
+      bool success = await AuthenticationManager.isCurrentlyLoggedIn();
+      setState(() {
+        _success = success;
       });
     } catch (e) {
       print("Caught error: " + e.toString());

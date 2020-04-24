@@ -55,11 +55,12 @@ class RegisterPageState extends State<RegisterPage> {
                     ? null // disables the button
                     : () async {
                         if (_formKey.currentState.validate()) {
-                          setState(() async {
-                            _success = await AuthenticationManager.register(
+                          bool success = await AuthenticationManager.register(
                               email: _emailController.text,
                               password: _passwordController.text,
                             );
+                          setState(() {
+                            _success = success;
                           });
                         } else {
                           setState(() {
