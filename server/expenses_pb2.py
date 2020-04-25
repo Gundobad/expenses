@@ -18,7 +18,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='expsenses',
   syntax='proto3',
   serialized_options=b'\n\020io.grpc.expensesB\rExpensesProtoP\001\242\002\003HLW',
-  serialized_pb=b'\n\x0e\x65xpenses.proto\x12\texpsenses\"&\n\x14MultiExpensesRequest\x12\x0e\n\x06userID\x18\x01 \x01(\t\"9\n\x11MultiExpenseReply\x12$\n\x08\x65xpenses\x18\x01 \x03(\x0b\x32\x12.expsenses.Expense\"3\n\x0e\x45xpenseRequest\x12\x0e\n\x06userID\x18\x01 \x01(\t\x12\x11\n\texpenseID\x18\x02 \x01(\t\"q\n\x07\x45xpense\x12\x11\n\texpenseID\x18\x01 \x01(\t\x12\x10\n\x08winkelID\x18\x02 \x01(\t\x12\r\n\x05price\x18\x03 \x01(\x02\x12\x0f\n\x07summary\x18\x04 \x01(\t\x12\x11\n\ttimestamp\x18\x05 \x01(\t\x12\x0e\n\x06userID\x18\x06 \x01(\t2\xdf\x01\n\x08\x45xpenses\x12S\n\x10GetMultiExpenses\x12\x1f.expsenses.MultiExpensesRequest\x1a\x1c.expsenses.MultiExpenseReply\"\x00\x12@\n\rGetOneExpense\x12\x19.expsenses.ExpenseRequest\x1a\x12.expsenses.Expense\"\x00\x12<\n\x10\x43reateOneExpense\x12\x12.expsenses.Expense\x1a\x12.expsenses.Expense\"\x00\x42)\n\x10io.grpc.expensesB\rExpensesProtoP\x01\xa2\x02\x03HLWb\x06proto3'
+  serialized_pb=b'\n\x0e\x65xpenses.proto\x12\texpsenses\"\x16\n\x14MultiExpensesRequest\"9\n\x11MultiExpenseReply\x12$\n\x08\x65xpenses\x18\x01 \x03(\x0b\x32\x12.expsenses.Expense\"#\n\x0e\x45xpenseRequest\x12\x11\n\texpenseID\x18\x02 \x01(\t\"q\n\x07\x45xpense\x12\x11\n\texpenseID\x18\x01 \x01(\t\x12\x10\n\x08winkelID\x18\x02 \x01(\t\x12\r\n\x05price\x18\x03 \x01(\x02\x12\x0f\n\x07summary\x18\x04 \x01(\t\x12\x11\n\ttimestamp\x18\x05 \x01(\t\x12\x0e\n\x06userID\x18\x06 \x01(\t2\xdf\x01\n\x08\x45xpenses\x12S\n\x10GetMultiExpenses\x12\x1f.expsenses.MultiExpensesRequest\x1a\x1c.expsenses.MultiExpenseReply\"\x00\x12@\n\rGetOneExpense\x12\x19.expsenses.ExpenseRequest\x1a\x12.expsenses.Expense\"\x00\x12<\n\x10\x43reateOneExpense\x12\x12.expsenses.Expense\x1a\x12.expsenses.Expense\"\x00\x42)\n\x10io.grpc.expensesB\rExpensesProtoP\x01\xa2\x02\x03HLWb\x06proto3'
 )
 
 
@@ -31,13 +31,6 @@ _MULTIEXPENSESREQUEST = _descriptor.Descriptor(
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
-    _descriptor.FieldDescriptor(
-      name='userID', full_name='expsenses.MultiExpensesRequest.userID', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -51,7 +44,7 @@ _MULTIEXPENSESREQUEST = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=29,
-  serialized_end=67,
+  serialized_end=51,
 )
 
 
@@ -81,8 +74,8 @@ _MULTIEXPENSEREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=69,
-  serialized_end=126,
+  serialized_start=53,
+  serialized_end=110,
 )
 
 
@@ -94,14 +87,7 @@ _EXPENSEREQUEST = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='userID', full_name='expsenses.ExpenseRequest.userID', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='expenseID', full_name='expsenses.ExpenseRequest.expenseID', index=1,
+      name='expenseID', full_name='expsenses.ExpenseRequest.expenseID', index=0,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -119,8 +105,8 @@ _EXPENSEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=128,
-  serialized_end=179,
+  serialized_start=112,
+  serialized_end=147,
 )
 
 
@@ -185,8 +171,8 @@ _EXPENSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=181,
-  serialized_end=294,
+  serialized_start=149,
+  serialized_end=262,
 )
 
 _MULTIEXPENSEREPLY.fields_by_name['expenses'].message_type = _EXPENSE
@@ -233,8 +219,8 @@ _EXPENSES = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=297,
-  serialized_end=520,
+  serialized_start=265,
+  serialized_end=488,
   methods=[
   _descriptor.MethodDescriptor(
     name='GetMultiExpenses',
