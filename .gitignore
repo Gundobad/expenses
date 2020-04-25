@@ -1,7 +1,7 @@
 .vscode/
 __pycache__
 env/
-config.ini
+server/configuration/
 
 # ionic ingores
 # Miscellaneous

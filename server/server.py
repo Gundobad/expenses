@@ -8,10 +8,10 @@ from bson.objectid import ObjectId
 from concurrent import futures
 from os import path
 from pymongo import MongoClient
-
+from token_handler import verify_id_token
 
 # Load configuration values
-CONFIGFILE = 'config.ini'
+CONFIGFILE = 'configuration/config.ini'
 
 config = configparser.ConfigParser()
 if path.isfile(CONFIGFILE):
@@ -70,6 +70,26 @@ def to_mongo(expense, id_set=False):
     return dic
 
 
+# Define helper functions to interact with request context
+def getAuthenticationTokenFromContext(context):
+    for key, value in context.invocation_metadata():
+        if key.lower() == 'authentication':
+            # trim off header prefix
+            prefixLength = len("Bearer ")
+            return value[prefixLength:]
+
+
+def getUserIdFromAuthenticationToken(token):
+    userInformation = verify_id_token(token)
+    if userInformation is not None:
+        return userInformation['user_id']
+
+
+def getUserIdFromContext(context):
+    token = getAuthenticationTokenFromContext(context)
+    return getUserIdFromAuthenticationToken(token)
+
+
 # Define Handler implementation
 class ExpenseHandler(expenses_pb2_grpc.ExpensesServicer):
 
@@ -98,6 +118,7 @@ class ExpenseHandler(expenses_pb2_grpc.ExpensesServicer):
         return expense
 
     def CreateOneExpense(self, request, context):
+        userId = getUserIdFromContext(context)
         expense = to_mongo(request)
         db.insert_one(expense)
         return from_mongo(expense)
