@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'package:grpc/grpc.dart';
 import '../proto-compiled/expenses.pb.dart';
 import '../proto-compiled/expenses.pbgrpc.dart';
 
 import 'createExpense.dart';
+import '../connection/connection.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key}) : super(key: key);
@@ -63,41 +63,18 @@ class _MyHomePageState extends State<MyHomePage> {
     return cards;
   }
 
-  void _checkGrpc() {
-    var temp = () async {
-      List<Expense> expenses = new List<Expense>();
-      final channel = ClientChannel(
-        '192.168.0.229',
-        port: 50051,
-        options:
-            const ChannelOptions(credentials: ChannelCredentials.insecure()),
-      );
-      final stub = ExpensesClient(channel);
+  void _updateExpenseCards() async {
+     final expenses = await ConnectionManager.getMultiExpenses();
 
-      final userId = "dj";
-
-      try {
-        var response = await stub
-            .getMultiExpenses(MultiExpensesRequest()..userID = userId);
-        expenses = response.expenses;
-      } catch (e) {
-        print('Caught error: $e');
-      }
-      await channel.shutdown();
-      return expenses;
-    };
-
-    temp().then((expenseslist) {
-      setState(() {
-        _expenses = _convertToCards(expenseslist);
-      });
+    setState(() {
+      _expenses = _convertToCards(expenses);
     });
   }
 
   @override
   void initState() {
     super.initState();
-    _checkGrpc();
+    _updateExpenseCards();
   }
 
   @override
@@ -119,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icon(Icons.refresh),
             onPressed: () {
               // TODO: show broadcast mesage when reload succeeded
-              _checkGrpc();
+              _updateExpenseCards();
             },
           )
         ],
@@ -158,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
             context,
             MaterialPageRoute(builder: (context) => CreateExpenseView()),
           ).then((value) {
-            _checkGrpc();
+            _updateExpenseCards();
           });
         },
         tooltip: 'Increment',
