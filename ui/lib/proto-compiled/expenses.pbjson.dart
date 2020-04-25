@@ -35,6 +35,7 @@ const Expense$json = const {
     const {'1': 'price', '3': 3, '4': 1, '5': 2, '10': 'price'},
     const {'1': 'summary', '3': 4, '4': 1, '5': 9, '10': 'summary'},
     const {'1': 'timestamp', '3': 5, '4': 1, '5': 9, '10': 'timestamp'},
+    const {'1': 'userID', '3': 6, '4': 1, '5': 9, '10': 'userID'},
   ],
 };
 

@@ -38,4 +38,5 @@ message Expense {
   float price = 3;
   string summary = 4;
   string timestamp = 5;
+  string userID = 6;
 }

@@ -113,6 +113,7 @@ class Expense extends $pb.GeneratedMessage {
     ..a<$core.double>(3, 'price', $pb.PbFieldType.OF)
     ..aOS(4, 'summary')
     ..aOS(5, 'timestamp')
+    ..aOS(6, 'userID', protoName: 'userID')
     ..hasRequiredFields = false
   ;
 
@@ -175,5 +176,14 @@ class Expense extends $pb.GeneratedMessage {
   $core.bool hasTimestamp() => $_has(4);
   @$pb.TagNumber(5)
   void clearTimestamp() => clearField(5);
+
+  @$pb.TagNumber(6)
+  $core.String get userID => $_getSZ(5);
+  @$pb.TagNumber(6)
+  set userID($core.String v) { $_setString(5, v); }
+  @$pb.TagNumber(6)
+  $core.bool hasUserID() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearUserID() => clearField(6);
 }
 
