@@ -24,10 +24,10 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
   static final TextEditingController _timeTextController =
       TextEditingController();
 
-  static const List<String> coded = [","]; //ABV list
-  static const List<String> decoded = ["."]; //corresponding list
+  static const List<String> before = [","]; //ABV list
+  static const List<String> after = ["."]; //corresponding list
   static final Map<String, String> _doubleTextCleanup =
-      new Map.fromIterables(coded, decoded);
+      new Map.fromIterables(before, after);
 
   static String cleanUpDoubleText(String old) {
     return _doubleTextCleanup.entries
@@ -61,13 +61,9 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          // Here we take the value from the MyHomePage object that was created by
-          // the App.build method, and use it to set our appbar title.
           title: Text("New expense"),
         ),
         body: Center(
-          // Center is a layout widget. It takes a single child and positions it
-          // in the middle of the parent.
           child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[

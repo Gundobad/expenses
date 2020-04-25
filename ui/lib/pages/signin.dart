@@ -134,7 +134,6 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
     super.dispose();
   }
 
-  // Example code of how to sign in with email and password.
   Future<bool> _signInWithEmailAndPassword() async {
     print("Signing in with email [" +
         _emailController.text +
