@@ -52,7 +52,7 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
       ..summary = "default"
       ..timestamp = _dateTextController.text + " " + _timeTextController.text;
 
-      ConnectionManager.createOneExpense(e);
+    ConnectionManager.createOneExpense(e);
 
     Navigator.pop(context);
   }
