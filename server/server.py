@@ -38,7 +38,7 @@ else:
 mongoConfig = config['mongodb']
 client = MongoClient(
     f"mongodb://{mongoConfig['hostname']}:{mongoConfig['port']}/")
-db = client[f"{mongoConfig['db']}'][f'{mongoConfig['collection']}"]
+db = client[f"{mongoConfig['db']}"][f"{mongoConfig['collection']}"]
 
 
 # Define helper functions to interact with database
