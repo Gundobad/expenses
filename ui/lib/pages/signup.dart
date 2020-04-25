@@ -56,9 +56,9 @@ class RegisterPageState extends State<RegisterPage> {
                     : () async {
                         if (_formKey.currentState.validate()) {
                           bool success = await AuthenticationManager.register(
-                              email: _emailController.text,
-                              password: _passwordController.text,
-                            );
+                            email: _emailController.text,
+                            password: _passwordController.text,
+                          );
                           setState(() {
                             _success = success;
                           });

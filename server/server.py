@@ -48,7 +48,8 @@ def from_mongo(e):
         price=e['price'],
         timestamp=e['timestamp'],
         summary=e['summary'],
-        expenseID=str(e['_id'])
+        expenseID=str(e['_id']),
+        userID=str(e['userID'])
     )
 
 
@@ -57,6 +58,7 @@ def to_mongo(expense, id_set=False):
         'winkelID': expense.winkelID,
         'price': expense.price,
         'timestamp': expense.timestamp,
+        'userID': expense.userID,
     }
 
     optional_fields = [('summary', '')]
@@ -94,21 +96,36 @@ def getUserIdFromContext(context):
 class ExpenseHandler(expenses_pb2_grpc.ExpensesServicer):
 
     def GetMultiExpenses(self, request, context):
+        # Retrieve user ID
+        userId = getUserIdFromContext(context)
+        if userId is None:
+            # TODO: return error code
+            userId = "invalid"
+
         context.set_code(grpc.StatusCode.OK)
         returnlist = expenses_pb2.MultiExpenseReply()
-        returnlist.expenses.extend([from_mongo(entry) for entry in db.find()])
+        returnlist.expenses.extend([
+            from_mongo(entry) for entry in db.find({'userID': userId})
+        ])
         return returnlist
 
     def GetOneExpense(self, request, context):
         expense_id = request.expenseID
 
-        # BSON requirement
+        # Retrieve user ID
+        userId = getUserIdFromContext(context)
+        if userId is None:
+            # TODO: return error code
+            userId = "invalid"
+
+        # BSON requirement: expense ID has to be proper type
         if isinstance(expense_id, str) and len(expense_id) == 24:
             expense_id = ObjectId(expense_id)
 
         # Query mongoDB
-        expense = db.find_one({'_id': expense_id})
+        expense = db.find_one({'_id': expense_id, 'userID': userId})
         if expense is None:
+            # TODO: return error code
             context.set_code(grpc.StatusCode.OK)
             return expenses_pb2.Expense()
 
@@ -119,6 +136,10 @@ class ExpenseHandler(expenses_pb2_grpc.ExpensesServicer):
 
     def CreateOneExpense(self, request, context):
         userId = getUserIdFromContext(context)
+        if userId is None:
+            # TODO: return error code
+            userId = "invalid"
+        request.userID = userId
         expense = to_mongo(request)
         db.insert_one(expense)
         return from_mongo(expense)
