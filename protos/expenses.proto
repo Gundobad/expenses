@@ -20,7 +20,7 @@ service Expenses {
 }
 
 message MultiExpensesRequest {
-  string userID = 1;
+
 }
 
 message MultiExpenseReply {
@@ -28,7 +28,6 @@ message MultiExpenseReply {
 }
 
 message ExpenseRequest {
-  string userID = 1;
   string expenseID = 2;
 }
 

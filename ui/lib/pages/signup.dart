@@ -98,7 +98,6 @@ class RegisterPageState extends State<RegisterPage> {
 
   @override
   void dispose() {
-    // Clean up the controller when the Widget is disposed
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();

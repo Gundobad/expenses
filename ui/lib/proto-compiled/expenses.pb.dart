@@ -11,7 +11,6 @@ import 'package:protobuf/protobuf.dart' as $pb;
 
 class MultiExpensesRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('MultiExpensesRequest', package: const $pb.PackageName('expsenses'), createEmptyInstance: create)
-    ..aOS(1, 'userID', protoName: 'userID')
     ..hasRequiredFields = false
   ;
 
@@ -29,15 +28,6 @@ class MultiExpensesRequest extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static MultiExpensesRequest getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<MultiExpensesRequest>(create);
   static MultiExpensesRequest _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $core.String get userID => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set userID($core.String v) { $_setString(0, v); }
-  @$pb.TagNumber(1)
-  $core.bool hasUserID() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearUserID() => clearField(1);
 }
 
 class MultiExpenseReply extends $pb.GeneratedMessage {
@@ -67,7 +57,6 @@ class MultiExpenseReply extends $pb.GeneratedMessage {
 
 class ExpenseRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo('ExpenseRequest', package: const $pb.PackageName('expsenses'), createEmptyInstance: create)
-    ..aOS(1, 'userID', protoName: 'userID')
     ..aOS(2, 'expenseID', protoName: 'expenseID')
     ..hasRequiredFields = false
   ;
@@ -87,21 +76,12 @@ class ExpenseRequest extends $pb.GeneratedMessage {
   static ExpenseRequest getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ExpenseRequest>(create);
   static ExpenseRequest _defaultInstance;
 
-  @$pb.TagNumber(1)
-  $core.String get userID => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set userID($core.String v) { $_setString(0, v); }
-  @$pb.TagNumber(1)
-  $core.bool hasUserID() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearUserID() => clearField(1);
-
   @$pb.TagNumber(2)
-  $core.String get expenseID => $_getSZ(1);
+  $core.String get expenseID => $_getSZ(0);
   @$pb.TagNumber(2)
-  set expenseID($core.String v) { $_setString(1, v); }
+  set expenseID($core.String v) { $_setString(0, v); }
   @$pb.TagNumber(2)
-  $core.bool hasExpenseID() => $_has(1);
+  $core.bool hasExpenseID() => $_has(0);
   @$pb.TagNumber(2)
   void clearExpenseID() => clearField(2);
 }
