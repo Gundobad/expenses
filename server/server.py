@@ -1,3 +1,4 @@
+import configparser
 import expenses_pb2
 import expenses_pb2_grpc
 import grpc
@@ -5,13 +6,42 @@ import logging
 
 from bson.objectid import ObjectId
 from concurrent import futures
+from os import path
 from pymongo import MongoClient
 
 
-client = MongoClient('mongodb://db:27017/')
-db = client['grpc_db']['expenses']
+# Load configuration values
+CONFIGFILE = 'config.ini'
+
+config = configparser.ConfigParser()
+if path.isfile(CONFIGFILE):
+    config.read(CONFIGFILE)
+else:
+    # Load example usage as a default if
+    # there is no configuration file present.
+    config.read_dict({
+        'mongodb': {
+            'hostname': 'db',
+            'port': 27017,
+            'db': 'grpc_db',
+            'collection': 'expenses',
+        },
+        'server': {
+            'port': 50051,
+        },
+    })
+    with open(CONFIGFILE, 'w') as configfile:
+        config.write(configfile)
 
 
+# Create database client
+mongoConfig = config['mongodb']
+client = MongoClient(
+    f"mongodb://{mongoConfig['hostname']}:{mongoConfig['port']}/")
+db = client[f"{mongoConfig['db']}'][f'{mongoConfig['collection']}"]
+
+
+# Define helper functions to interact with database
 def from_mongo(e):
     return expenses_pb2.Expense(
         winkelID=e['winkelID'],
@@ -24,12 +54,12 @@ def from_mongo(e):
 
 def to_mongo(expense, id_set=False):
     dic = {
-        "winkelID": expense.winkelID,
-        "price": expense.price,
-        "timestamp": expense.timestamp,
+        'winkelID': expense.winkelID,
+        'price': expense.price,
+        'timestamp': expense.timestamp,
     }
 
-    optional_fields = [('summary', "")]
+    optional_fields = [('summary', '')]
     for field, default_value in optional_fields:
         dic[field] = (
             getattr(expense, field) if hasattr(expense, field)
@@ -40,6 +70,7 @@ def to_mongo(expense, id_set=False):
     return dic
 
 
+# Define Handler implementation
 class ExpenseHandler(expenses_pb2_grpc.ExpensesServicer):
 
     def GetMultiExpenses(self, request, context):
@@ -72,10 +103,11 @@ class ExpenseHandler(expenses_pb2_grpc.ExpensesServicer):
         return from_mongo(expense)
 
 
+# Define server context
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     expenses_pb2_grpc.add_ExpensesServicer_to_server(ExpenseHandler(), server)
-    server.add_insecure_port('[::]:50051')
+    server.add_insecure_port(f"[::]:{config['server']['port']}")
     server.start()
     server.wait_for_termination()
 
