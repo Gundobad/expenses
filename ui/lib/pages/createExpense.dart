@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:intl/intl.dart';
-import 'package:grpc/grpc.dart';
 
 import '../proto-compiled/expenses.pb.dart';
-import '../proto-compiled/expenses.pbgrpc.dart';
+
+import '../connection/connection.dart';
 
 class CreateExpenseView extends StatefulWidget {
   CreateExpenseView({Key key}) : super(key: key);
@@ -45,31 +45,15 @@ class _CreateExpenseViewState extends State<CreateExpenseView> {
     _timeTextController.text = (new DateFormat('HH:mm')).format(now);
   }
 
-  void createNewExpense() {
+  void createNewExpense() async {
     Expense e = new Expense()
       ..winkelID = _shopTextController.text
       ..price = double.parse(cleanUpDoubleText(_paymentTextController.text))
       ..summary = "default"
       ..timestamp = _dateTextController.text + " " + _timeTextController.text;
 
-    var temp = (exp) async {
-      final channel = ClientChannel(
-        '192.168.0.229',
-        port: 50051,
-        options:
-            const ChannelOptions(credentials: ChannelCredentials.insecure()),
-      );
-      final stub = ExpensesClient(channel);
+      ConnectionManager.createOneExpense(e);
 
-      try {
-        await stub.createOneExpense(exp);
-      } catch (e) {
-        print('Caught error: $e');
-      }
-      await channel.shutdown();
-    };
-
-    temp(e);
     Navigator.pop(context);
   }
 
