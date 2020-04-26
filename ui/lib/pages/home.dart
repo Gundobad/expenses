@@ -5,6 +5,7 @@ import '../proto-compiled/expenses.pbgrpc.dart';
 
 import 'createExpense.dart';
 import '../connection/connection.dart';
+import 'detail.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key}) : super(key: key);
@@ -16,7 +17,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Card> _expenses = List<Card>();
+  List<Expense> _expenses = List<Expense>();
 
   Card _convertToCard(Expense expense) {
     var price = expense.price.toStringAsFixed(2);
@@ -36,40 +37,18 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  List<Card> _convertToCards(List<Expense> expenses) {
-    List<Card> cards = new List<Card>();
-    for (Expense expense in expenses) {
-      cards.add(_convertToCard(expense));
-    }
-    if (cards.isEmpty) {
-      cards.add(new Card(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ListTile(
-              title: Text('No expenses available yet. '),
-              subtitle: Text(
-                  'You can add a new expense by tapping the button in the bottom right of your screen.'),
-            ),
-          ],
-        ),
-      ));
-    }
-    return cards;
-  }
-
-  void _updateExpenseCards() async {
-     final expenses = await ConnectionManager.getMultiExpenses();
+  void _updateExpenses() async {
+    final expenses = await ConnectionManager.getMultiExpenses();
 
     setState(() {
-      _expenses = _convertToCards(expenses);
+      _expenses = expenses;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    _updateExpenseCards();
+    _updateExpenses();
   }
 
   @override
@@ -83,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icon(Icons.refresh),
             onPressed: () {
               // TODO: show broadcast mesage when reload succeeded
-              _updateExpenseCards();
+              _updateExpenses();
             },
           )
         ],
@@ -92,9 +71,38 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            (_expenses.isEmpty)
+                ? Card(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const <Widget>[
+                        ListTile(
+                          title: const Text('No expenses available yet. '),
+                          subtitle: const Text(
+                              'You can add a new expense by tapping the button in the bottom right of your screen.'),
+                        ),
+                      ],
+                    ),
+                  )
+                : const Text(""),
             Expanded(
-              child: ListView(
-                  padding: const EdgeInsets.all(8), children: _expenses),
+              child: ListView.builder(
+                itemCount: _expenses.length,
+                itemBuilder: (context, index) {
+                  return InkWell(
+                    child: _convertToCard(_expenses[index]),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ExpenseDetail(expense: _expenses[index]),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),
@@ -105,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
             context,
             MaterialPageRoute(builder: (context) => CreateExpenseView()),
           ).then((value) {
-            _updateExpenseCards();
+            _updateExpenses();
           });
         },
         tooltip: 'Increment',
