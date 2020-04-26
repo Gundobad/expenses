@@ -35,8 +35,9 @@ class ConnectionManager {
     final channel = getChannel();
     final client = ExpensesClient(channel);
     try {
-      await client.createOneExpense(expense,
+      Expense result = await client.createOneExpense(expense,
           options: CallOptions(providers: getHeaders(auth: true)));
+      print("Successfully created " + result.toString());
     } catch (e) {
       print('Caught error: $e');
     } finally {
