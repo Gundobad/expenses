@@ -107,7 +107,8 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
                       ),
                     ),
                     SizedBox(height: 20),
-                    // Why InkWell? https://stackoverflow.com/a/56040244
+                    // InkWell shows a ripple and allows for onTap behaviour
+                    // (https://stackoverflow.com/a/56040244)
                     InkWell(
                         onTap: () {
                           Navigator.push(
